@@ -24,7 +24,7 @@ namespace works.ei8.Cortex.Diary.Nucleus.Client.In
                 (ex, _) => HttpTerminalClient.logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static readonly string terminalsPath = "cortex/terminals/";
+        private static readonly string terminalsPath = "nuclei/d23/terminals/";
         private static readonly string terminalsPathTemplate = terminalsPath + "{0}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
