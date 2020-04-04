@@ -95,7 +95,7 @@ namespace works.ei8.Cortex.Diary.Nucleus.Client.In
                 Tag = HttpUtility.JavaScriptStringEncode(tag)
             };
 
-            await this.requestProvider.PatchAsync(
+            await this.requestProvider.PutAsync(
                $"{avatarUrl}{string.Format(HttpNeuronClient.neuronsPathTemplate, id)}",
                data,
                this.tokenService.GetAccessToken(),
