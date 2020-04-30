@@ -1,8 +1,8 @@
-﻿using org.neurul.Cortex.Common;
+﻿using neurUL.Cortex.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Nucleus.Client.In
+namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public interface ITerminalClient
     {

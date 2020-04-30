@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using NLog;
-using org.neurul.Common;
-using org.neurul.Common.Constants;
-using org.neurul.Common.Domain.Model;
-using org.neurul.Common.Http;
+using neurUL.Common;
+using neurUL.Common.Constants;
+using neurUL.Common.Domain.Model;
+using neurUL.Common.Http;
 using Polly;
 using Splat;
 using System;
@@ -13,9 +13,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Common;
+using ei8.Cortex.Diary.Common;
 
-namespace works.ei8.Cortex.Diary.Nucleus.Client.Out
+namespace ei8.Cortex.Diary.Nucleus.Client.Out
 {
     public class HttpNotificationClient : INotificationClient
     {

@@ -29,7 +29,7 @@
  */
 
 using NLog;
-using org.neurul.Common.Http;
+using neurUL.Common.Http;
 using Polly;
 using Splat;
 using System;
@@ -37,9 +37,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using works.ei8.Cortex.Diary.Nucleus.Client.In;
+using ei8.Cortex.Diary.Nucleus.Client.In;
 
-namespace works.ei8.Cortex.Diary.Nucleus.Client.In
+namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public class HttpNeuronClient : INeuronClient
     {

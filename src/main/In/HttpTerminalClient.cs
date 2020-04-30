@@ -1,15 +1,15 @@
 ﻿using NLog;
-using org.neurul.Common.Http;
-using org.neurul.Cortex.Common;
+using neurUL.Common.Http;
+using neurUL.Cortex.Common;
 using Polly;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using works.ei8.Cortex.Diary.Nucleus.Client.In;
+using ei8.Cortex.Diary.Nucleus.Client.In;
 
-namespace works.ei8.Cortex.Diary.Nucleus.Client.In
+namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public class HttpTerminalClient : ITerminalClient
     {

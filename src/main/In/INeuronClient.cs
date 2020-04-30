@@ -34,7 +34,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace works.ei8.Cortex.Diary.Nucleus.Client.In
+namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public interface INeuronClient
     {
@@ -45,3 +45,4 @@ namespace works.ei8.Cortex.Diary.Nucleus.Client.In
         Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken));
     }
 }
+
