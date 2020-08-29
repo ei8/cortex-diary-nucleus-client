@@ -66,84 +66,72 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
             this.tokenService = tokenService ?? Locator.Current.GetService<ITokenService>();
         }
 
-        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken)) =>
+        public async Task<Neuron> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNeuronByIdInternal(avatarUrl, id, centralId, type, token).ConfigureAwait(false));
+                async () => await this.GetNeuronByIdInternal(avatarUrl, id, neuronQuery, token).ConfigureAwait(false)
+                );
 
-        private async Task<IEnumerable<Neuron>> GetNeuronByIdInternal(string avatarUrl, string id, string centralId = null, RelativeType type = RelativeType.NotSet, CancellationToken token = default(CancellationToken))
+        private async Task<Neuron> GetNeuronByIdInternal(string avatarUrl, string id, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            string path = string.Empty;
-            var queryStringBuilder = new StringBuilder();
-
-            if (!string.IsNullOrEmpty(centralId) && type != RelativeType.NotSet)
-            {
-                path = $"{HttpNeuronQueryClient.GetNeuronsPathTemplate}/{centralId}/relatives/{id}";
-                queryStringBuilder.Append($"?{nameof(type)}={type.ToString()}");
-            }
-            else
-                path = $"{HttpNeuronQueryClient.GetNeuronsPathTemplate}/{id}";
-
-            return await HttpNeuronQueryClient.GetNeuronsUnescaped(avatarUrl, path, queryStringBuilder, token, requestProvider, this.tokenService);
-        }
-
-        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, string centralId = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken)) =>
-            await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNeuronsInternal(avatarUrl, centralId, type, neuronQuery, limit, token).ConfigureAwait(false));
-
-        private async Task<IEnumerable<Neuron>> GetNeuronsInternal(string avatarUrl, string centralId = null, RelativeType type = RelativeType.NotSet, NeuronQuery neuronQuery = null, int? limit = 1000, CancellationToken token = default(CancellationToken))
-        {
-            var queryStringBuilder = new StringBuilder();
-
-            // TODO: if (type != RelativeType.NotSet)
-            //    queryStringBuilder.Append("type=")
-            //        .Append(type.ToString());
-            if (neuronQuery != null)
-            {
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.Id, nameof(NeuronQuery.Id), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.IdNot, nameof(NeuronQuery.IdNot), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.TagContains, nameof(NeuronQuery.TagContains), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.TagContainsNot, nameof(NeuronQuery.TagContainsNot), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.Presynaptic, nameof(NeuronQuery.Presynaptic), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.PresynapticNot, nameof(NeuronQuery.PresynapticNot), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.Postsynaptic, nameof(NeuronQuery.Postsynaptic), queryStringBuilder);
-                HttpNeuronQueryClient.AppendQuery(neuronQuery.PostsynapticNot, nameof(NeuronQuery.PostsynapticNot), queryStringBuilder);
-            }
-            if (limit.HasValue)
-            {
-                if (queryStringBuilder.Length > 0)
-                    queryStringBuilder.Append('&');
-
-                queryStringBuilder
-                    .Append("limit=")
-                    .Append(limit.Value);
-            }
-            if (queryStringBuilder.Length > 0)
-                queryStringBuilder.Insert(0, '?');
-
-            var path = string.IsNullOrEmpty(centralId) ? HttpNeuronQueryClient.GetNeuronsPathTemplate : string.Format(HttpNeuronQueryClient.GetRelativesPathTemplate, centralId);
-
-            return await HttpNeuronQueryClient.GetNeuronsUnescaped(avatarUrl, path, queryStringBuilder, token, requestProvider, this.tokenService);
-        }
-
-        private static async Task<IEnumerable<Neuron>> GetNeuronsUnescaped(string avatarUrl, string path, StringBuilder queryStringBuilder, CancellationToken token, IRequestProvider requestProvider, ITokenService tokenService)
-        {
-            var result = await requestProvider.GetAsync<IEnumerable<Neuron>>(
-                           $"{avatarUrl}{path}{queryStringBuilder.ToString()}",
-                           tokenService.GetAccessToken(),
-                           token
+            var result = await requestProvider.GetAsync<Neuron>(
+                           $"{avatarUrl}{HttpNeuronQueryClient.GetNeuronsPathTemplate}/{id}{neuronQuery.ToQueryString()}",
+                           token: token
                            );
-            result.Where(n => n.Tag != null).ToList().ForEach(n => n.Tag = Regex.Unescape(n.Tag));
+
+            if (result != null)
+                result.UnescapeTag();
+
             return result;
         }
 
-        private static void AppendQuery(IEnumerable<string> field, string fieldName, StringBuilder queryStringBuilder)
+        public async Task<IEnumerable<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken)) =>
+            await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
+                async () => await this.GetNeuronByIdInternal(avatarUrl, id, centralId, neuronQuery, token).ConfigureAwait(false));
+
+        private async Task<IEnumerable<Neuron>> GetNeuronByIdInternal(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
         {
-            if (field != null && field.Any())
-            {
-                if (queryStringBuilder.Length > 0)
-                    queryStringBuilder.Append('&');
-                queryStringBuilder.Append(string.Join("&", field.Select(s => $"{fieldName}={s}")));
-            }
+            return await HttpNeuronQueryClient.GetNeuronsUnescaped(
+                avatarUrl,
+                $"{HttpNeuronQueryClient.GetNeuronsPathTemplate}/{centralId}/relatives/{id}",
+                neuronQuery.ToQueryString(),
+                token,
+                requestProvider,
+                this.tokenService 
+                );
+        }
+
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken)) =>
+            await this.GetNeurons(avatarUrl, null, neuronQuery, token);
+
+        public async Task<IEnumerable<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken)) =>
+            await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
+                async () => await this.GetNeuronsInternal(avatarUrl, centralId, neuronQuery, token).ConfigureAwait(false));
+
+        private async Task<IEnumerable<Neuron>> GetNeuronsInternal(string avatarUrl, string centralId, NeuronQuery neuronQuery, CancellationToken token = default(CancellationToken))
+        {
+            var path = string.IsNullOrEmpty(centralId) ? 
+                HttpNeuronQueryClient.GetNeuronsPathTemplate : 
+                string.Format(HttpNeuronQueryClient.GetRelativesPathTemplate, centralId);
+
+            return await HttpNeuronQueryClient.GetNeuronsUnescaped(
+                avatarUrl, 
+                path,
+                neuronQuery.ToQueryString(), 
+                token, 
+                requestProvider, 
+                this.tokenService
+                );
+        }
+
+        private static async Task<IEnumerable<Neuron>> GetNeuronsUnescaped(string avatarUrl, string path, string queryString, CancellationToken token, IRequestProvider requestProvider, ITokenService tokenService)
+        {
+            var result = await requestProvider.GetAsync<IEnumerable<Neuron>>(
+                           $"{avatarUrl}{path}{queryString}",
+                           tokenService.GetAccessToken(),
+                           token
+                           );
+            result.ToList().ForEach(n => n.UnescapeTag());
+            return result;
         }
     }
 }
