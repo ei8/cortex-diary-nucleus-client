@@ -38,7 +38,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             await HttpTerminalClient.exponentialRetryPolicy.ExecuteAsync(
                 async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, token).ConfigureAwait(false));
 
-        public async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken))
+        private async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
@@ -60,7 +60,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             await HttpTerminalClient.exponentialRetryPolicy.ExecuteAsync(
                     async () => await this.DeactivateTerminalInternal(avatarUrl, id, expectedVersion, token).ConfigureAwait(false));
 
-        public async Task DeactivateTerminalInternal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task DeactivateTerminalInternal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
         {
             await this.requestProvider.DeleteAsync<object>(
                $"{avatarUrl}{string.Format(HttpTerminalClient.terminalsPathTemplate, id)}",

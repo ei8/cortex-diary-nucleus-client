@@ -1,19 +1,11 @@
-﻿using Newtonsoft.Json;
-using NLog;
-using neurUL.Common;
-using neurUL.Common.Constants;
-using neurUL.Common.Domain.Model;
+﻿using ei8.Cortex.Diary.Common;
 using neurUL.Common.Http;
+using NLog;
 using Polly;
 using Splat;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ei8.Cortex.Diary.Common;
 
 namespace ei8.Cortex.Diary.Nucleus.Client.Out
 {
@@ -31,7 +23,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
             );
 
         private static string getEventsPathTemplate = "{0}nuclei/d23/notifications/{1}";
-        private static readonly Dictionary<string, HttpClient> clients = new Dictionary<string, HttpClient>();
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public HttpNotificationClient(IRequestProvider requestProvider = null, ITokenService tokenService = null)
@@ -44,7 +35,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
             await HttpNotificationClient.exponentialRetryPolicy.ExecuteAsync(
                 async () => await this.GetNotificationLogInternal(avatarUrl, notificationLogId, token).ConfigureAwait(false));
         
-        public async Task<NotificationLog> GetNotificationLogInternal(string avatarUrl, string notificationLogId, CancellationToken token = default(CancellationToken))
+        private async Task<NotificationLog> GetNotificationLogInternal(string avatarUrl, string notificationLogId, CancellationToken token = default(CancellationToken))
         {
             return await requestProvider.GetAsync<NotificationLog>(
                            string.Format(HttpNotificationClient.getEventsPathTemplate, avatarUrl, notificationLogId),
