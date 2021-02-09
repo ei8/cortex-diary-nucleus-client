@@ -44,7 +44,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
     public class HttpNeuronClient : INeuronClient
     {
         private readonly IRequestProvider requestProvider;
-        private readonly ITokenService tokenService;
 
         private static Policy exponentialRetryPolicy = Policy
             .Handle<Exception>()
@@ -58,17 +57,16 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
         private static readonly string neuronsPathTemplate = neuronsPath + "{0}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public HttpNeuronClient(IRequestProvider requestProvider = null, ITokenService tokenService = null)
+        public HttpNeuronClient(IRequestProvider requestProvider = null)
         {
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
-            this.tokenService = tokenService ?? Locator.Current.GetService<ITokenService>();
         }
         
-        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, regionId, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, regionId, bearerToken, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string regionId, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string regionId, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
@@ -80,15 +78,15 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             await this.requestProvider.PostAsync(
                $"{avatarUrl}{HttpNeuronClient.neuronsPath}",
                data,
-               this.tokenService.GetAccessToken()
+               bearerToken
                );
         }
 
-        public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.ChangeNeuronTagInternal(avatarUrl, id, tag, expectedVersion, token).ConfigureAwait(false));
+                    async () => await this.ChangeNeuronTagInternal(avatarUrl, id, tag, expectedVersion, bearerToken, token).ConfigureAwait(false));
 
-        private async Task ChangeNeuronTagInternal(string avatarUrl, string id, string tag, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task ChangeNeuronTagInternal(string avatarUrl, string id, string tag, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
@@ -98,22 +96,22 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             await this.requestProvider.PatchAsync<object>(
                $"{avatarUrl}{string.Format(HttpNeuronClient.neuronsPathTemplate, id)}",
                data,
-               this.tokenService.GetAccessToken(),
+               bearerToken,
                token,
                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
                );
         }
 
-        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.DeactivateNeuronInternal(avatarUrl, id, expectedVersion, token));
+                async () => await this.DeactivateNeuronInternal(avatarUrl, id, expectedVersion, bearerToken, token));
 
-        private async Task DeactivateNeuronInternal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task DeactivateNeuronInternal(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             await this.requestProvider.DeleteAsync<object>(
                $"{avatarUrl}{string.Format(HttpNeuronClient.neuronsPathTemplate, id)}",
                null,
-               this.tokenService.GetAccessToken(),
+               bearerToken,
                token,
                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
                );

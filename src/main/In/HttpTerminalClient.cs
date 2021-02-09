@@ -14,7 +14,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
     public class HttpTerminalClient : ITerminalClient
     {
         private readonly IRequestProvider requestProvider;
-        private readonly ITokenService tokenService;
 
         private static Policy exponentialRetryPolicy = Policy
             .Handle<Exception>()
@@ -28,17 +27,16 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
         private static readonly string terminalsPathTemplate = terminalsPath + "{0}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public HttpTerminalClient(IRequestProvider requestProvider = null, ITokenService tokenService = null)
+        public HttpTerminalClient(IRequestProvider requestProvider = null)
         {
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
-            this.tokenService = tokenService ?? Locator.Current.GetService<ITokenService>();
         }
 
-        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpTerminalClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, token).ConfigureAwait(false));
+                async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, bearerToken, token).ConfigureAwait(false));
 
-        private async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, CancellationToken token = default(CancellationToken))
+        private async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
@@ -52,20 +50,20 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             await this.requestProvider.PostAsync(
                $"{avatarUrl}{HttpTerminalClient.terminalsPath}",
                data,
-               this.tokenService.GetAccessToken()
+               bearerToken
                );
         }
         
-        public async Task DeactivateTerminal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken)) =>
+        public async Task DeactivateTerminal(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpTerminalClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.DeactivateTerminalInternal(avatarUrl, id, expectedVersion, token).ConfigureAwait(false));
+                    async () => await this.DeactivateTerminalInternal(avatarUrl, id, expectedVersion, bearerToken, token).ConfigureAwait(false));
 
-        private async Task DeactivateTerminalInternal(string avatarUrl, string id, int expectedVersion, CancellationToken token = default(CancellationToken))
+        private async Task DeactivateTerminalInternal(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             await this.requestProvider.DeleteAsync<object>(
                $"{avatarUrl}{string.Format(HttpTerminalClient.terminalsPathTemplate, id)}",
                null,
-               this.tokenService.GetAccessToken(),
+               bearerToken,
                token,
                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
                );

@@ -12,7 +12,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
     public class HttpNotificationClient : INotificationClient
     {
         private readonly IRequestProvider requestProvider;
-        private readonly ITokenService tokenService;
 
         private static Policy exponentialRetryPolicy = Policy
             .Handle<Exception>()
@@ -25,21 +24,20 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
         private static string getEventsPathTemplate = "{0}nuclei/d23/notifications/{1}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public HttpNotificationClient(IRequestProvider requestProvider = null, ITokenService tokenService = null)
+        public HttpNotificationClient(IRequestProvider requestProvider = null)
         {
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
-            this.tokenService = tokenService ?? Locator.Current.GetService<ITokenService>();
         }
 
-        public async Task<NotificationLog> GetNotificationLog(string avatarUrl, string notificationLogId, CancellationToken token = default(CancellationToken)) =>
+        public async Task<NotificationLog> GetNotificationLog(string avatarUrl, string notificationLogId, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNotificationClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNotificationLogInternal(avatarUrl, notificationLogId, token).ConfigureAwait(false));
+                async () => await this.GetNotificationLogInternal(avatarUrl, notificationLogId, bearerToken, token).ConfigureAwait(false));
         
-        private async Task<NotificationLog> GetNotificationLogInternal(string avatarUrl, string notificationLogId, CancellationToken token = default(CancellationToken))
+        private async Task<NotificationLog> GetNotificationLogInternal(string avatarUrl, string notificationLogId, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             return await requestProvider.GetAsync<NotificationLog>(
                            string.Format(HttpNotificationClient.getEventsPathTemplate, avatarUrl, notificationLogId),
-                           tokenService.GetAccessToken(),
+                           bearerToken,
                            token
                            );
         }
