@@ -32,11 +32,11 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
 
-        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string bearerToken, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateTerminal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string url, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpTerminalClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, bearerToken, token).ConfigureAwait(false));
+                async () => await this.CreateTerminalInternal(avatarUrl, id, presynapticNeuronId, postsynapticNeuronId, effect, strength, url, bearerToken, token).ConfigureAwait(false));
 
-        private async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string bearerToken, CancellationToken token = default(CancellationToken))
+        private async Task CreateTerminalInternal(string avatarUrl, string id, string presynapticNeuronId, string postsynapticNeuronId, NeurotransmitterEffect effect, float strength, string url, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
@@ -45,6 +45,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
                 PostsynapticNeuronId = postsynapticNeuronId,
                 Effect = effect.ToString(),
                 Strength = strength.ToString(),
+                Url = url
             };
 
             await this.requestProvider.PostAsync(

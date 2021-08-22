@@ -62,17 +62,18 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
         
-        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string bearerToken, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string url, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, regionId, bearerToken, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, regionId, url, bearerToken, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string regionId, string bearerToken, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string regionId, string url, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
                 Id = id,
                 Tag = HttpUtility.JavaScriptStringEncode(tag),
-                RegionId = regionId
+                RegionId = regionId,
+                Url = url
             };
 
             await this.requestProvider.PostAsync(
@@ -91,6 +92,26 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             var data = new
             {
                 Tag = HttpUtility.JavaScriptStringEncode(tag)
+            };
+
+            await this.requestProvider.PatchAsync<object>(
+               $"{avatarUrl}{string.Format(HttpNeuronClient.neuronsPathTemplate, id)}",
+               data,
+               bearerToken,
+               token,
+               new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
+               );
+        }
+
+        public async Task ChangeNeuronUrl(string avatarUrl, string id, string url, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
+            await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
+                    async () => await this.ChangeNeuronUrlInternal(avatarUrl, id, url, expectedVersion, bearerToken, token).ConfigureAwait(false));
+
+        private async Task ChangeNeuronUrlInternal(string avatarUrl, string id, string url, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
+        {
+            var data = new
+            {
+                Url = HttpUtility.JavaScriptStringEncode(url)
             };
 
             await this.requestProvider.PatchAsync<object>(

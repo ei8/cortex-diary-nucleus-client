@@ -38,9 +38,11 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public interface INeuronClient
     {
-        Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string url, string bearerToken, CancellationToken token = default(CancellationToken));
 
         Task ChangeNeuronTag(string avatarUrl, string id, string tag, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
+
+        Task ChangeNeuronUrl(string avatarUrl, string id, string url, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
                 
         Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
     }
