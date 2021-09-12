@@ -13,7 +13,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             string postsynapticNeuronId, 
             NeurotransmitterEffect effect, 
             float strength, 
-            string url, 
+            string externalReferenceUrl, 
             string bearerToken, 
             CancellationToken token = default(CancellationToken)
             );

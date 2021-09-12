@@ -62,18 +62,18 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
         
-        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string url, string bearerToken, CancellationToken token = default(CancellationToken)) =>
+        public async Task CreateNeuron(string avatarUrl, string id, string tag, string regionId, string externalReferenceUrl, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, regionId, url, bearerToken, token).ConfigureAwait(false));
+                async () => await this.CreateNeuronInternal(avatarUrl, id, tag, regionId, externalReferenceUrl, bearerToken, token).ConfigureAwait(false));
 
-        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string regionId, string url, string bearerToken, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronInternal(string avatarUrl, string id, string tag, string regionId, string externalReferenceUrl, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
                 Id = id,
                 Tag = HttpUtility.JavaScriptStringEncode(tag),
                 RegionId = regionId,
-                Url = url
+                ExternalReferenceUrl = externalReferenceUrl
             };
 
             await this.requestProvider.PostAsync(
@@ -103,15 +103,15 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
                );
         }
 
-        public async Task ChangeNeuronUrl(string avatarUrl, string id, string url, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
+        public async Task ChangeNeuronExternalReferenceUrl(string avatarUrl, string id, string externalReferenceUrl, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                    async () => await this.ChangeNeuronUrlInternal(avatarUrl, id, url, expectedVersion, bearerToken, token).ConfigureAwait(false));
+                    async () => await this.ChangeNeuronExternalReferenceUrlInternal(avatarUrl, id, externalReferenceUrl, expectedVersion, bearerToken, token).ConfigureAwait(false));
 
-        private async Task ChangeNeuronUrlInternal(string avatarUrl, string id, string url, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
+        private async Task ChangeNeuronExternalReferenceUrlInternal(string avatarUrl, string id, string externalReferenceUrl, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             var data = new
             {
-                Url = HttpUtility.JavaScriptStringEncode(url)
+                ExternalReferenceUrl = externalReferenceUrl
             };
 
             await this.requestProvider.PatchAsync<object>(
