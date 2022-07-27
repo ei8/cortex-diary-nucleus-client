@@ -103,6 +103,26 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
                );
         }
 
+        public async Task ChangeNeuronRegionId(string avatarUrl, string id, string regionId, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
+            await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
+                    async () => await this.ChangeNeuronRegionIdInternal(avatarUrl, id, regionId, expectedVersion, bearerToken, token).ConfigureAwait(false));
+
+        private async Task ChangeNeuronRegionIdInternal(string avatarUrl, string id, string regionId, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
+        {
+            var data = new
+            {
+                RegionId = regionId
+            };
+
+            await this.requestProvider.PatchAsync<object>(
+               $"{avatarUrl}{string.Format(HttpNeuronClient.neuronsPathTemplate, id)}",
+               data,
+               bearerToken,
+               token,
+               new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
+               );
+        }
+
         public async Task ChangeNeuronExternalReferenceUrl(string avatarUrl, string id, string externalReferenceUrl, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
                     async () => await this.ChangeNeuronExternalReferenceUrlInternal(avatarUrl, id, externalReferenceUrl, expectedVersion, bearerToken, token).ConfigureAwait(false));
