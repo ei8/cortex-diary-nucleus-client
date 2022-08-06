@@ -5,13 +5,13 @@
     <AssemblyName>ei8.Cortex.Diary.Nucleus.Client</AssemblyName>
     <RootNamespace>ei8.Cortex.Diary.Nucleus.Client</RootNamespace>
     <PackageId>ei8.Cortex.Diary.Nucleus.Client</PackageId>
-    <PackageVersion>0.1.21</PackageVersion>
+    <PackageVersion>0.1.22</PackageVersion>
     <Authors>Elmer Roderick Niem Bool</Authors>
     <Description>Cortex Diary Nucleus Client</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Removed Graph Query.</PackageReleaseNotes>
     <PackageTags>cortex diary nucleus client</PackageTags>
-    <Version>0.1.21</Version>
+    <Version>0.1.22</Version>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
