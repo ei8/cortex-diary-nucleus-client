@@ -31,9 +31,10 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
 
         public async Task<SubscriptionConfiguration> GetServerConfigurationAsync(string baseUrl, CancellationToken token = default)
         {
+            var url = $"{baseUrl}{HttpSubscriptionConfigurationClient.subscriptionsConfigurationPath}";
             return await HttpSubscriptionConfigurationClient.exponentialRetryPolicy.ExecuteAsync(async () =>
             {
-                return await this.requestProvider.GetAsync<SubscriptionConfiguration>($"{baseUrl}/{HttpSubscriptionConfigurationClient.subscriptionsConfigurationPath}", "", token);
+                return await this.requestProvider.GetAsync<SubscriptionConfiguration>(url, "", token);
             });
         }
     }

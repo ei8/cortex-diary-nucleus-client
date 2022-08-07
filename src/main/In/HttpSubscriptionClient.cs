@@ -33,7 +33,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
         {
             await HttpSubscriptionClient.exponentialRetryPolicy.ExecuteAsync(async () =>
             {
-                await this.requestProvider.PostAsync($"{baseUrl}/{HttpSubscriptionClient.subscriptionsPath}", subscriptionInfo, token: bearerToken);
+                await this.requestProvider.PostAsync($"{baseUrl}{HttpSubscriptionClient.subscriptionsPath}", subscriptionInfo, token: bearerToken);
             });
         }
     }
