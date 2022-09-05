@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
-    public class HttpSubscriptionClient<T> : ISubscriptionClient<T> where T : IReceiverInfo
+    public class HttpSubscriptionClient : ISubscriptionClient
     {
         private readonly IRequestProvider requestProvider;
 
@@ -20,7 +20,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             .WaitAndRetryAsync(
                 3,
                 attempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, attempt)),
-                (ex, _) => HttpSubscriptionClient<T>.logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
+                (ex, _) => HttpSubscriptionClient.logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -31,11 +31,11 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
 
-        public async Task AddSubscriptionAsync(string baseUrl, IAddSubscriptionReceiverRequest<T> request, string bearerToken, CancellationToken cancellationToken = default)
+        public async Task AddSubscriptionAsync(string baseUrl, AddSubscriptionWebReceiverRequest request, string bearerToken, CancellationToken cancellationToken = default)
         {
-            var requestUrl = $"{baseUrl}{HttpSubscriptionClient<T>.subscriptionsPath}/{request.ReceiverInfo.GetSubscriptionPath()}";
+            var requestUrl = $"{baseUrl}{HttpSubscriptionClient.subscriptionsPath}/{request.ReceiverInfo.GetSubscriptionPath()}";
 
-            await HttpSubscriptionClient<T>.exponentialRetryPolicy.ExecuteAsync(async () =>
+            await HttpSubscriptionClient.exponentialRetryPolicy.ExecuteAsync(async () =>
             {
                 await this.requestProvider.PostAsync(requestUrl, request, token: bearerToken);
             });
