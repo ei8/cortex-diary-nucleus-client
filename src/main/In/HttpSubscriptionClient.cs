@@ -1,4 +1,6 @@
 ﻿using ei8.Cortex.Subscriptions.Common;
+using ei8.Cortex.Subscriptions.Common.Extensions;
+using ei8.Cortex.Subscriptions.Common.Receivers;
 using neurUL.Common.Http;
 using NLog;
 using Polly;
@@ -22,18 +24,20 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             );
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private static readonly string subscriptionsPath = "nuclei/d23/subscriptions";
+        private static readonly string subscriptionsPath = "nuclei/d23/subscriptions/receivers";
 
         public HttpSubscriptionClient(IRequestProvider requestProvider = null)
         {
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
 
-        public async Task AddSubscriptionAsync(string baseUrl, BrowserSubscriptionInfo subscriptionInfo, string bearerToken, CancellationToken cancellationToken = default)
+        public async Task AddSubscriptionAsync(string baseUrl, AddSubscriptionWebReceiverRequest request, string bearerToken, CancellationToken cancellationToken = default)
         {
+            var requestUrl = $"{baseUrl}{HttpSubscriptionClient.subscriptionsPath}/{request.ReceiverInfo.GetSubscriptionPath()}";
+
             await HttpSubscriptionClient.exponentialRetryPolicy.ExecuteAsync(async () =>
             {
-                await this.requestProvider.PostAsync($"{baseUrl}{HttpSubscriptionClient.subscriptionsPath}", subscriptionInfo, token: bearerToken);
+                await this.requestProvider.PostAsync(requestUrl, request, token: bearerToken);
             });
         }
     }
