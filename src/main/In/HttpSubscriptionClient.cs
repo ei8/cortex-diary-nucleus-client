@@ -31,7 +31,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
 
-        public async Task AddSubscriptionAsync(string baseUrl, AddSubscriptionWebReceiverRequest request, string bearerToken, CancellationToken cancellationToken = default)
+        public async Task AddSubscriptionAsync<T>(string baseUrl, IAddSubscriptionReceiverRequest<T> request, string bearerToken, CancellationToken cancellationToken = default) where T : IReceiverInfo
         {
             var requestUrl = $"{baseUrl}{HttpSubscriptionClient.subscriptionsPath}/{request.ReceiverInfo.GetSubscriptionPath()}";
 

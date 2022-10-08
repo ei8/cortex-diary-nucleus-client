@@ -7,6 +7,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public interface ISubscriptionClient
     {
-        Task AddSubscriptionAsync(string baseUrl, AddSubscriptionWebReceiverRequest receiverRequest, string bearerToken, CancellationToken cancellationToken = default);
+        Task AddSubscriptionAsync<T>(string baseUrl, IAddSubscriptionReceiverRequest<T> request, string bearerToken, CancellationToken cancellationToken = default) where T : IReceiverInfo;
     }
 }
