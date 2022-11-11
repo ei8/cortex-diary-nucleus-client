@@ -137,21 +137,5 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
                new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
                );
         }
-
-        public async Task CreateNeuronAccessRequest(string avatarUrl, string neuronId, int expectedVersion, string bearerToken, CancellationToken token = default)
-        {
-            await HttpNeuronClient.exponentialRetryPolicy.ExecuteAsync(
-                   async () => await this.CreateNeuronAccessRequestInternal(avatarUrl, neuronId, expectedVersion, bearerToken, token)).ConfigureAwait(false);
-        }
-        private async Task CreateNeuronAccessRequestInternal(string avatarUrl, string neuronId, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
-        {
-            await this.requestProvider.PostAsync<object>(
-               $"{avatarUrl}/accessRequest/{neuronId}",
-               null,
-               bearerToken,
-               token,
-               new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
-               );
-        }
     }
 }

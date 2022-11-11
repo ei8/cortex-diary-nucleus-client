@@ -45,8 +45,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
         Task ChangeNeuronExternalReferenceUrl(string avatarUrl, string id, string externalReferenceUrl, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
                 
         Task DeactivateNeuron(string avatarUrl, string id, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
-
-        Task CreateNeuronAccessRequest(string avatarUrl, string neuronId, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
     }
 }
 
