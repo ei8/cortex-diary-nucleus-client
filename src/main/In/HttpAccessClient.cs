@@ -29,20 +29,19 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
         }
 
-        public async Task CreateNeuronAccessRequest(string avatarUrl, string neuronId, int expectedVersion, string bearerToken, CancellationToken token = default)
+        public async Task CreateNeuronAccessRequest(string avatarUrl, string neuronId, string bearerToken, CancellationToken token = default)
         {
             await HttpAccessClient.ExponentialRetryPolicy.ExecuteAsync(
-                   async () => await this.CreateNeuronAccessRequestInternal(avatarUrl, neuronId, expectedVersion, bearerToken, token)).ConfigureAwait(false);
+                   async () => await this.CreateNeuronAccessRequestInternal(avatarUrl, neuronId, bearerToken, token)).ConfigureAwait(false);
         }
 
-        private async Task CreateNeuronAccessRequestInternal(string avatarUrl, string neuronId, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken))
+        private async Task CreateNeuronAccessRequestInternal(string avatarUrl, string neuronId, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             await this.requestProvider.PostAsync<object>(
-               $"{avatarUrl}/{HttpAccessClient.AccessModulePath}/neuron/{neuronId}",
+               $"{avatarUrl}{HttpAccessClient.AccessModulePath}neuron/{neuronId}",
                null,
                bearerToken,
-               token,
-               new KeyValuePair<string, string>("ETag", expectedVersion.ToString())
+               token
                );
         }
     }

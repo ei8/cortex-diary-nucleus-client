@@ -5,6 +5,6 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
     public interface IAccessClient
     {
-        Task CreateNeuronAccessRequest(string avatarUrl, string neuronId, int expectedVersion, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task CreateNeuronAccessRequest(string avatarUrl, string neuronId, string bearerToken, CancellationToken token = default(CancellationToken));
     }
 }
