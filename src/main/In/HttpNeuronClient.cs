@@ -28,16 +28,16 @@
      support@ei8.works
  */
 
-using NLog;
 using neurUL.Common.Http;
+using NLog;
 using Polly;
+using Polly.Retry;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using ei8.Cortex.Diary.Nucleus.Client.In;
 
 namespace ei8.Cortex.Diary.Nucleus.Client.In
 {
@@ -45,7 +45,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
     {
         private readonly IRequestProvider requestProvider;
 
-        private static Policy exponentialRetryPolicy = Policy
+        private static AsyncRetryPolicy exponentialRetryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
                 3,
