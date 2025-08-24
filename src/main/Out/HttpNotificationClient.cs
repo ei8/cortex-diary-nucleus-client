@@ -22,7 +22,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
                 (ex, _) => HttpNotificationClient.logger.Error(ex, "Error occurred while querying Event Store. " + ex.InnerException?.Message)
             );
 
-        private static string getEventsPathTemplate = "{0}nuclei/d23/notifications/{1}";
+        private static string getEventsPathTemplate = "{0}nuclei/un8y/notifications/{1}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public HttpNotificationClient(IRequestProvider requestProvider = null)

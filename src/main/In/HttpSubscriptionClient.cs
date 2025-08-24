@@ -25,7 +25,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
             );
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private static readonly string subscriptionsPath = "nuclei/d23/subscriptions/receivers";
+        private static readonly string subscriptionsPath = "nuclei/un8y/subscriptions/receivers";
 
         public HttpSubscriptionClient(IRequestProvider requestProvider = null)
         {

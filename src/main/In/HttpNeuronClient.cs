@@ -53,7 +53,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
                 (ex, _) => HttpNeuronClient.logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static readonly string neuronsPath = "nuclei/d23/neurons/";
+        private static readonly string neuronsPath = "nuclei/un8y/neurons/";
         private static readonly string neuronsPathTemplate = neuronsPath + "{0}";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 

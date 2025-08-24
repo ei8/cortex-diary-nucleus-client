@@ -23,7 +23,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.Out
             );
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private static readonly string subscriptionsConfigurationPath = "nuclei/d23/subscriptions/config";
+        private static readonly string subscriptionsConfigurationPath = "nuclei/un8y/subscriptions/config";
 
         public HttpSubscriptionConfigurationClient(IRequestProvider requestProvider = null)
         {

@@ -22,7 +22,7 @@ namespace ei8.Cortex.Diary.Nucleus.Client.In
                 (ex, _) => HttpAccessClient.Logger.Error(ex, "Error occurred while communicating with Neurul Cortex. " + ex.InnerException?.Message)
             );
 
-        private static readonly string AccessModulePath = "nuclei/d23/access/";
+        private static readonly string AccessModulePath = "nuclei/un8y/access/";
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public HttpAccessClient(IRequestProvider requestProvider = null)
